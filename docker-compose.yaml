@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  firstlink-db:
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    container_name: firstlink-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      RESTORE_DB: ${RESTORE_DB}  # Add this line
+    ports:
+      - "5432:5432"
+    volumes:
+      - .env:/etc/environment
+      - ./postgres:/var/lib/postgresql/data
+      - ./backup:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  firstlink-redis:
+    image: redis:6.2
+    container_name: firstlink-redis
+    ports:
+      - "6379:6379"
+
+  firstlink-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: firstlink-api
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./log:/var/log
+    environment:
+      HOST: ${HOST}
+      SECRET: ${SECRET}
+      DATABASE_URL: ${DATABASE_URL}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      FIREBASE_CREDENTIALS: ${FIREBASE_CREDENTIALS}
+      API_URL: ${API_URL}
+      LOG_PATH: ${LOG_PATH}
+      SMTP_FROM: ${SMTP_FROM}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      EMAIL_LOGO_URL: ${EMAIL_LOGO_URL}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_DB_NUMBER: ${REDIS_DB_NUMBER}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_BUCKET: ${AWS_BUCKET}
+      AWS_REGION: ${AWS_REGION}
+
+    depends_on:
+      firstlink-db:
+        condition: service_healthy
+      firstlink-redis:
+        condition: service_started
+
+volumes:
+  postgres_data:

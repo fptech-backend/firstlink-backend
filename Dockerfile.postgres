@@ -1,0 +1,37 @@
+# Use the official PostgreSQL image as the base image
+FROM postgres:13
+
+# Install cron and other necessary packages
+RUN apt-get update && apt-get install -y cron
+
+# Set environment variables
+ENV POSTGRES_USER=${POSTGRES_USER}
+ENV POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+ENV POSTGRES_DB=${POSTGRES_DB}
+
+# Copy the backup script
+COPY backup.sh /usr/local/bin/backup.sh
+
+# Copy the restore script
+COPY restore.sh /usr/local/bin/restore.sh
+
+# Copy the custom entrypoint script
+COPY docker-entrypoint-custom.sh /usr/local/bin/docker-entrypoint-custom.sh
+
+# Create the backup directory
+RUN mkdir -p /docker-entrypoint-initdb.d
+
+# Add environment variables to /etc/environment
+RUN echo "POSTGRES_USER=${POSTGRES_USER}" >> /etc/environment
+RUN echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}" >> /etc/environment
+RUN echo "POSTGRES_DB=${POSTGRES_DB}" >> /etc/environment
+
+# Add the cron job for backup to run every 2 hours
+RUN echo "*/5 * * * * root . /etc/environment; /usr/local/bin/backup.sh >> /var/log/cron.log 2>&1" >> /etc/crontab
+
+# Ensure the backup and restore scripts are executable
+RUN chmod +x /usr/local/bin/backup.sh /usr/local/bin/restore.sh /usr/local/bin/docker-entrypoint-custom.sh
+
+# Set the custom entrypoint script
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint-custom.sh"]
+CMD ["postgres"]
