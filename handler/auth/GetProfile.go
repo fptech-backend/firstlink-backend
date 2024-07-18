@@ -16,7 +16,7 @@ import (
 // @Tags Auth
 // @Security BearerAuth
 // @Produce json
-// @Success 200 {object} response.DataResponse{data=model.ResponseProfile} "Successful get profile"
+// @Success 200 {object} response.DataResponse{data=model_account.ResponseProfile} "Successful get profile"
 // @Failure 400 {object} response.MessageResponse "Bad request"
 // @Failure 500 {object} response.MessageResponse "Internal server error"
 // @Router /auth/profile [get]
