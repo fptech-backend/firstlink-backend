@@ -6,7 +6,7 @@ import (
 	"certification/config"
 	"certification/constant"
 	"certification/logger"
-	"certification/model"
+	model_token "certification/model/token"
 	"context"
 	"reflect"
 	"strconv"
@@ -117,23 +117,13 @@ func GenerateJWT(id *uuid.UUID, profile_id *uuid.UUID, email *string, expiry *ti
 
 // Validate token from token table whether it's exist and return account id
 func ValidateToken(token string, db *gorm.DB) (uuid.UUID, error) {
-	var tokenData model.Token
+	var tokenData model_token.Token
 	err := db.Where("token = ?", token).First(&tokenData).Error
 	if err != nil {
 		return uuid.Nil, err
 	}
 
 	return tokenData.AccountID, nil
-}
-
-// Update the token status to used
-func UpdateTokenStatus(token string, tx *gorm.DB) error {
-	err := tx.Model(&model.Token{}).Where("token = ?", token).Update("status", constant.USED).Error
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 // Generate random 6-digit OTP
@@ -152,7 +142,7 @@ func GenerateOTPToken(accountID uuid.UUID, tx *gorm.DB) (string, error) {
 	logger.Log.Info(time.Now(), " : ", time.Now().Add(time.Minute*5))
 
 	//store otp in token
-	token := model.Token{
+	token := model_token.Token{
 		AccountID: accountID,
 		Token:     string(otp),
 		ExpireAt:  time.Now().Add(time.Minute * 5), // 5 minutes expiry

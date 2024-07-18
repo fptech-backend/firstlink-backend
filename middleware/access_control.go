@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"certification/constant"
-	"certification/handler"
+	handler_auth "certification/handler/auth"
 	"certification/logger"
 	"certification/response"
 
@@ -23,7 +23,7 @@ func ValidatePermission(moduleID string, permission string) fiber.Handler {
 }
 
 func ValidateModulePermission(ctx *fiber.Ctx, moduleID string, permission string) response.MessageResponse {
-	access, ok := ctx.Locals(moduleID).(handler.Access)
+	access, ok := ctx.Locals(moduleID).(handler_auth.Access)
 	if !ok {
 		return response.AccessDeniedResponseBody(ctx.Locals("id").(string))
 	}

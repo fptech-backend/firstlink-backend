@@ -3,7 +3,10 @@ package database
 import (
 	"certification/cache"
 	"certification/logger"
-	"certification/model"
+	model_account "certification/model/account"
+	model_company "certification/model/company"
+	model_token "certification/model/token"
+	model_user "certification/model/user"
 	"context"
 
 	"cloud.google.com/go/firestore"
@@ -51,10 +54,10 @@ func (initializer *Initializer) CloseDB() {
 
 func (initializer *Initializer) MigrateDB() {
 	err := initializer.DB.AutoMigrate(
-		model.Account{},
-		model.Company{},
-		model.User{},
-		model.Token{},
+		model_account.Account{},
+		model_company.Company{},
+		model_user.User{},
+		model_token.Token{},
 	)
 	if err != nil {
 		logger.Log.Error(err)

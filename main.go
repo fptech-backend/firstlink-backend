@@ -20,9 +20,9 @@ var (
 	hash    string
 )
 
-// @title FirstCert API
+// @title FirstLink API
 // @version 2.0
-// @description This is a swagger for CertFirst
+// @description This is a swagger for FirstLink
 // @termsOfService http://swagger.io/terms/
 // @contact.name FPG Tech
 // @contact.email support@firstpaviliontech.com

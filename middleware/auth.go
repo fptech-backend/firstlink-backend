@@ -5,7 +5,7 @@ import (
 	"certification/config"
 	"certification/constant"
 	"certification/database"
-	"certification/handler"
+	handler_auth "certification/handler/auth"
 	"certification/logger"
 	"certification/response"
 	"certification/utils"
@@ -130,7 +130,7 @@ func JWTKeyFunc(token *jwt.Token) (interface{}, error) {
 }
 
 func ParseModulePermission(ctx *fiber.Ctx, accessesJSON []map[string]interface{}) {
-	accesses := make([]handler.Access, len(accessesJSON))
+	accesses := make([]handler_auth.Access, len(accessesJSON))
 
 	// Store module access and permission in Locals
 	for i, accessJSON := range accessesJSON {
@@ -140,7 +140,7 @@ func ParseModulePermission(ctx *fiber.Ctx, accessesJSON []map[string]interface{}
 		writeAccess, _ := accessJSON["write_access"].(bool)
 		deleteAccess, _ := accessJSON["delete_access"].(bool)
 
-		accesses[i] = handler.Access{
+		accesses[i] = handler_auth.Access{
 			ModuleID:     moduleIDStr,
 			ModuleAccess: moduleAccess,
 			ReadAccess:   readAccess,

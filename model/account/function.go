@@ -1,37 +1,11 @@
-package model
+package model_account
 
 import (
-	"certification/constant"
 	"certification/logger"
-	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
-
-type Account struct {
-	ID        uuid.UUID `json:"id" gorm:"type:uuid;primaryKey;unique;default: gen_random_uuid();"`
-	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`
-	UpdatedAt time.Time `json:"updated_at" gorm:"autoUpdateTime"`
-
-	Email    string                   `json:"email"`
-	Password string                   `json:"password"`
-	Role     constant.AccountRoleType `json:"role"`
-	Status   constant.Status          `json:"status"`
-
-	Company Company `json:"company" gorm:"foreignKey:AccountID"`
-	User    User    `json:"user" gorm:"foreignKey:AccountID"`
-}
-
-type ResponseProfile struct {
-	ID     uuid.UUID                `json:"id"`
-	Email  string                   `json:"email"`
-	Role   constant.AccountRoleType `json:"role"`
-	Status constant.Status          `json:"status"`
-
-	Company Company `json:"company" gorm:"foreignKey:AccountID"`
-	User    User    `json:"user" gorm:"foreignKey:AccountID"`
-}
 
 // ----------------- Account Functions -----------------
 
@@ -41,7 +15,6 @@ func GetAccountByID(db *gorm.DB, id uuid.UUID) (*Account, error) {
 	if err := db.Where("id = ?", id).First(&a).Error; err != nil {
 		return nil, err
 	}
-
 	return &a, nil
 }
 
@@ -52,7 +25,6 @@ func GetAccountByEmail(db *gorm.DB, email string) (*Account, error) {
 		logger.Log.Error(err)
 		return nil, err
 	}
-
 	return &a, nil
 }
 
